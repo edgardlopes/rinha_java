@@ -37,6 +37,10 @@ public class PessoaController {
             return ResponseEntity.badRequest().build();
         }
 
+        if(repository.existsByApelido(pessoa.getApelido())) {
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
         UUID uuid = UUID.randomUUID();
 
 

@@ -5,7 +5,7 @@ services:
     container_name: rinha
     build:
       dockerfile: Dockerfile
-    image: rinha:0.0.6-SNAPSHOT
+    image: rinha:0.0.7-SNAPSHOT
     expose:
       - 8080
     environment:
@@ -48,6 +48,8 @@ services:
   postgres:
     image: postgres
     command: postgres -c 'max_connections=450' -c 'log_error_verbosity=terse'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres

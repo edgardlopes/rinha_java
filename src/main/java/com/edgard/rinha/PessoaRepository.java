@@ -14,4 +14,6 @@ public interface PessoaRepository extends CrudRepository<Pessoa, String> {
 
     List<Pessoa> findAllBySearchableContains(String searchable);
 
+    boolean existsByApelido(String apelido);
+
 }
