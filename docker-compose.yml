@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  app1: &app
+    container_name: rinha
+    build:
+      dockerfile: Dockerfile
+    image: rinha:0.0.6-SNAPSHOT
+    expose:
+      - 8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_HIKARI_MAXIMUM-POOL-SIZE: 45
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: ERROR
+
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "0.8GB"
+
+  app2:
+    <<: *app
+    container_name: rinha2
+    hostname: app2
+    expose:
+      - 8080
+
+  nginx: # Load Balancer
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
+      - app2
+    ports:
+      - "9999:9999"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: "0.2GB"
+
+  postgres:
+    image: postgres
+    command: postgres -c 'max_connections=450' -c 'log_error_verbosity=terse'
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.4"
+          memory: "1.2GB"
